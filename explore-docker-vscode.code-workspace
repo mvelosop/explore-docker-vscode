@@ -1,14 +1,14 @@
 {
-    "folders": [
+	"folders": [
 		{
 			"path": "."
 		},
 		{
-			"path": "src\\WebApp"
+			"path": "src\\WebApi"
 		},
 		{
-			"path": "src\\WebApi"
+			"path": "src\\WebApp"
 		}
 	],
-    "settings": {}
+	"settings": {}
 }
