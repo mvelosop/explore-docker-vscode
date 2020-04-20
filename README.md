@@ -36,12 +36,6 @@ The project should look similar to this:
 
 We'll have both applications running from VS Code so we can then update the `WebApp` application to consume the WebApi REST API to display a web page.
 
-Install the VS Code extensions to work with C#, as explained in the [Working with C#](https://code.visualstudio.com/docs/languages/csharp) documentation page.
-
-Respond with `Yes` when you get a notification like the following to install build and debug assets:
-
-![](media/install-build-and-debug-assets.png)
-
 Configure the **`applicationUrl`** properties in `Properties/launchSettings.json` for both applications so they use different ports, as shown next:
 
 For the **WebApi** application:
@@ -78,6 +72,91 @@ For the **WebApp** application:
   }
 }
 ```
+
+Install the [ms-dotnettools](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp) VS Code extension to add support for C#. Yo can see more details in the [Working with C#](https://code.visualstudio.com/docs/languages/csharp) documentation page.
+
+Then open the `src/WebApi/Program.cs` file, to get prompted to install the build and debug assets:
+
+![](media/install-build-and-debug-assets.png)
+
+Respond with `Yes` and the choose the `WebApi` project at the prompt:
+
+![](media/vscode-build-and-debug-assets-project-prompt.png)
+
+Configure the `tasks.json` file in the `.vscode` folder so they work on the solution folder and use the `.sln` file, that is, change the lines that show:
+
+```json
+"${workspaceFolder}/src/WebApi/WebApi.csproj",
+```
+
+To point to the solution folder:
+
+```json
+"${workspaceFolder}/src",
+```
+
+Configure the launch configurations to start both projects at the same time
+
+Add the `uriFormat` configuration to the `serverReady` section of the API project:
+
+```json
+"serverReadyAction": {
+    "action": "openExternally",
+    "uriFormat": "%s/WeatherForecast",
+    "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+},
+```
+
+Copy the `.NET Core Launch (API)` configuration as `.NET Core Launch (Web)`, update the folder and .dll files to the `WebApp` project, and delete the `uriFormat` parameter, so you get to something like this:
+
+```json
+{
+    "name": ".NET Core Launch (Web)",
+    "type": "coreclr",
+    "request": "launch",
+    "preLaunchTask": "build",
+    // If you have changed target frameworks, make sure to update the program path.
+    "program": "${workspaceFolder}/src/WebApp/bin/Debug/netcoreapp3.1/WebApp.dll",
+    "args": [],
+    "cwd": "${workspaceFolder}/src/WebApp",
+    "stopAtEntry": false,
+    // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
+    "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+    },
+    "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+    },
+    "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+    }
+},
+```
+
+Add a compound configuration to start both `WebApi` and `WebApp` together:
+
+```json
+"compounds": [
+    {
+        "name": "ASP.NET Core API+Web",
+        "configurations": [
+            ".NET Core Launch (API)",
+            ".NET Core Launch (Web)"
+        ]
+    }
+]
+```
+
+You should now be able to run both applications by selecting the debugging side panel and choosing the just created "**ASP.NET Core API+Web**" configuration:
+
+![](media/vscode-run-both-server-and-client-applications.png)
+
+Both applications should now be running with the corresponding browser windows open, and both applications visible in the debugging panel:
+
+![](media/vscode-server-and-client-appications-debugging-panel.png)
+
+**IMPORTANT**: keep in mind that now you have **two applications** to stop.
 
 Configure launch settings for the WebApi and WebApp applications, as explained in the [Debugging](https://code.visualstudio.com/Docs/editor/debugging) documentation page.
 
