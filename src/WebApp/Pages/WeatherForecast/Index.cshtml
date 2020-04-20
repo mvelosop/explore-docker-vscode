@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Weather Forecast";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Weather Forecast</h1>
+</div>
+<br>
+Data from: <a href="@Model.GetApiUrl" target="_blank">@Model.GetApiUrl</a>
+<table class="table table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">ºC</th>
+            <th scope="col">ºF</th>
+            <th scope="col">Summary</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Items == null)
+        {
+            <tr>
+                <td colspan="4" class="table-warning">Error getting information from "@Model.GetApiUrl" (@Model.ErrorMessage)</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <th scope="row">@($"{item.Date:yyyy-MM-dd HH:mm:ss}")</th>
+                    <td>@item.TemperatureC</td>
+                    <td>@item.TemperatureF</td>
+                    <td>@item.Summary</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<br>
+<div class="text-center">
+    <h2><a href="/">Back to Home page</a></h2>
+</div>

@@ -158,7 +158,20 @@ Both applications should now be running with the corresponding browser windows o
 
 **IMPORTANT**: keep in mind that now you have **two applications** to stop.
 
-Configure launch settings for the WebApi and WebApp applications, as explained in the [Debugging](https://code.visualstudio.com/Docs/editor/debugging) documentation page.
+## Configure the WebApp application to consume the WebApi endpoint
+
+We won't go into the change details because they are pretty standard and very basic and you can see them in the repo. Anyway these are changed files:
+
+- **src/WebApp**
+  - Startup.cs
+  - WebApp.csproj
+- **src/WebApp/Pages**
+  - Index.cshtml
+- **src/WebApp/Pages/WeatherForecast**
+  - Index.cshtml
+  - Index.cshtml.cs
+  - WeatherForecast.cs
+  - WeatherForecastApiClient.cs
 
 ## Additional resources
 
