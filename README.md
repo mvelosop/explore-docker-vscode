@@ -173,6 +173,24 @@ We won't go into the change details because they are pretty standard and very ba
   - WeatherForecast.cs
   - WeatherForecastApiClient.cs
 
+You should now be able to run both applications and get views this:
+
+- **Web App Home page**
+
+  ![](media/webapp-home-page.png)
+
+- **Web App Weather Forecast**
+
+  ![](media/webapp-weather-forecast.png)
+
+- **Web API Weather Forecast**
+
+  ![](media/webapi-weather-forecast.png)
+
+- **Web App Weather Forecast with Web API shut down**
+
+  ![](media/webapp-weather-forecast-failure.png)
+
 ## Additional resources
 
 - **Integrate with External Tools via Tasks** \
