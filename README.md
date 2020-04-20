@@ -4,12 +4,6 @@ This is a repo to explore Docker-related development with VS Code.
 
 ## Initial setup
 
-- Edit the `.gitignore` file to include VS Code workspace files in source control
-
-  ```
-  !*.code-workspace
-  ```
-
 - Create `src`, `src\WebApi`, and `src\WebApp` folders
 
   ```powershell
@@ -20,14 +14,19 @@ This is a repo to explore Docker-related development with VS Code.
 
 - Create default WebApi and WebApp .NET Core applications
 
-  ```dotnetcli
-  dotnet new webapi --name WebApi --output src/WebApi
-  dotnet new webapp --name WebApp --output src/WebApp
+  ```powershell
+  cd src
+  dotnet new webapi --name WebApi --output WebApi
+  dotnet new webapp --name WebApp --output WebApp
   ```
 
-- Add the `src/WebApi` and `src/WebApp` folders as Workspace folders to the project as explained in the [Multi-root Workspaces](https://code.visualstudio.com/docs/editor/multi-root-workspaces) documentation page.
+- Create a solution file in the src folder and add both projects to the solution
 
-- Save the workspace file as `explore-docker-vscode.code-workspace`
+  ```powershell
+  dotnet new sln -n explore-docker-vscode
+  dotnet sln explore-docker-vscode.sln add WebApi/WebApi.csproj
+  dotnet sln explore-docker-vscode.sln add WebApp/WebApp.csproj
+  ```
 
 The project should look similar to this:
 
@@ -81,3 +80,14 @@ For the **WebApp** application:
 ```
 
 Configure launch settings for the WebApi and WebApp applications, as explained in the [Debugging](https://code.visualstudio.com/Docs/editor/debugging) documentation page.
+
+## Additional resources
+
+- **Integrate with External Tools via Tasks** \
+  <https://code.visualstudio.com/docs/editor/tasks>
+
+- **Debugging - Multi-target debugging** \
+  <https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging>
+
+- **Configuring launch.json for C# debugging** \
+  <https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#starting-a-web-browser>
