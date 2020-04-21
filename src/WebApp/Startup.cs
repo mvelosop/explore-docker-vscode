@@ -31,7 +31,7 @@ namespace WebApp
             services.AddTransient<WeatherForecastApiClient>();
             services.AddHttpClient<WeatherForecastApiClient>(client =>
             {
-                client.BaseAddress = new Uri("https://localhost:51443");
+                client.BaseAddress = new Uri(Configuration["WebApiBaseAddress"]);
             });
         }
 
