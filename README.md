@@ -14,6 +14,7 @@ It contains **VERY** simple Web App + REST API applications, to explore developm
     - [Update `tasks.json`](#update-tasksjson)
     - [Update `launch.json`](#update-launchjson)
   - [4 - Update the WebApp to consume the WebApi endpoint](#4---update-the-webapp-to-consume-the-webapi-endpoint)
+  - [5 - Containerize the applications with docker-compose](#5---containerize-the-applications-with-docker-compose)
 - [Additional resources](#additional-resources)
 
 ## Overview
@@ -24,13 +25,17 @@ We're going to:
 2. Create the base Web + API applications.
 3. Have both apps running at the same time from VS Code.
 4. Update the WebApp to consume the WebApi endpoint.
-5. Containerize the applications using docker-compose.
+5. Containerize the applications with docker-compose.
 
 ## Details
 
 ### 1 - Set up the environment
 
-- Install the [ms-dotnettools](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp) VS Code extension to add support for C#. See the [Working with C#](https://code.visualstudio.com/docs/languages/csharp) documentation page for details.
+- Install the [Microsoft C# extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp).
+- Install the [Microsoft Docker extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker).
+- Install [Docker Desktop](https://docs.docker.com/get-docker/).
+
+See the [Working with C#](https://code.visualstudio.com/docs/languages/csharp) documentation page for details.
 
 ### 2 - Create the base applications
 
@@ -241,6 +246,35 @@ You should now be able to run both applications and get views like these:
 - **Web App Weather Forecast with Web API shut down**
 
   ![Forecast page with error message](media/webapp-weather-forecast-failure.png)
+
+### 5 - Containerize the applications with docker-compose
+
+Add the docker files to the workspace, by running the command
+
+`Docker: Add Docker Files to Workspace`
+
+![](media/add-docker-files-to-workspace.png)
+
+You'll have to enter/select the following parameters:
+
+| Parameter                     | Value                    |
+|-------------------------------|--------------------------|
+| Application Platform          | .NET: ASP.NET Core       |
+| Operating System              | Linux                    |
+| Include Docker Compose files? | Yes                      |
+| Ports lo expose               | 80, 443                  |
+| Project                       | src/WebApi/WebApi.csproj |
+
+This process adds/updates a few files:
+
+- Updates **tasks.json** to add the `docker-build` and `docker-run` tasks for `debug` and `release` configurations.
+- Updates **launch.json** to add a `Docker .NET Core launch` setting.
+- Adds the **Dockerfile** file to the WebApi project
+- Adds the **.dockerignore** file.
+- Adds the **docker-compose.debug.yml** file.
+- Adds the **docker-compose.yml** file
+
+The repeat the process for the WebApp project
 
 ## Additional resources
 
