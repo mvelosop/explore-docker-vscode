@@ -9,3 +9,11 @@ services:
       dockerfile: src/WebApi/Dockerfile
     ports:
       - 80
+
+  webapp:
+    image: webapp
+    build:
+      context: .
+      dockerfile: src/WebApp/Dockerfile
+    ports:
+      - 80

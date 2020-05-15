@@ -257,24 +257,28 @@ Add the docker files to the workspace, by running the command
 
 You'll have to enter/select the following parameters:
 
-| Parameter                     | Value                    |
-|-------------------------------|--------------------------|
-| Application Platform          | .NET: ASP.NET Core       |
-| Operating System              | Linux                    |
-| Include Docker Compose files? | Yes                      |
-| Ports lo expose               | 80, 443                  |
-| Project                       | src/WebApi/WebApi.csproj |
+| Parameter                     | Value                        |
+|-------------------------------|------------------------------|
+| Application Platform          | .NET: ASP.NET Core           |
+| Operating System              | Linux                        |
+| Include Docker Compose files? | Yes                          |
+| Ports lo expose               | 80, 443                      |
+| Project                       | src/WebApi/**WebApi**.csproj |
 
 This process adds/updates a few files:
 
-- Updates **tasks.json** to add the `docker-build` and `docker-run` tasks for `debug` and `release` configurations.
-- Updates **launch.json** to add a `Docker .NET Core launch` setting.
-- Adds the **Dockerfile** file to the WebApi project
+- Adds the **Dockerfile** file to the **WebApi** project
 - Adds the **.dockerignore** file.
 - Adds the **docker-compose.debug.yml** file.
 - Adds the **docker-compose.yml** file
+- Updates **tasks.json** to add the `docker-build` and `docker-run` tasks for `debug` and `release` configurations.
+- Updates **launch.json** to add a `Docker .NET Core launch` setting.
 
-The repeat the process for the WebApp project
+The updates to **tasks.json** and **launch.json** are only useful for running a single container application, but not so in a multi-container application.
+
+Now let's repeat the process for the **WebApp** project and answer **NO** when the process asks to overwrite the **tasks.json**, **launch.json** and **.dockerignore** files.
+
+The process also generates the **docker-compose1.yml** and **docker-compose.debug1.yml** files for the **WepApp** project, that you'll have to merge manually into the **docker-compose.yml** and **docker-compose.debug.yml** files generated previously.
 
 ## Additional resources
 
