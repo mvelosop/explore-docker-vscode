@@ -6,50 +6,57 @@ It contains **VERY** simple Web App + REST API applications, to explore developm
 
 ## Overview
 
-- Set up the project and create the base Web + API applications.
-- Have both apps running at the same time from VS Code.
-- Update the WebApp to consume the WebApi endpoint.
-- Containerize the applications using docker-compose.
+We're going to:
+
+1. Set up the environment.
+2. Create the base Web + API applications.
+3. Have both apps running at the same time from VS Code.
+4. Update the WebApp to consume the WebApi endpoint.
+5. Containerize the applications using docker-compose.
 
 ## Details
 
-### 0 - Environment setup
+### 1 - Set up the environment
 
 - Install the [ms-dotnettools](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp) VS Code extension to add support for C#. See the [Working with C#](https://code.visualstudio.com/docs/languages/csharp) documentation page for details.
 
-### 1 - Initial setup
+### 2 - Create the base applications
 
-- Create `src`, `src\WebApi`, and `src\WebApp` folders
+Create `src`, `src\WebApi`, and `src\WebApp` folders
 
-  ```powershell
-  md src
-  md src/WebApi
-  md src/WebApp
-  ```
+```powershell
+md src
+md src/WebApi
+md src/WebApp
+```
 
-- Create `WebApi` and `WebApp` .NET Core applications using default dotnet templates.
+Create `WebApi` and `WebApp` .NET Core applications using default dotnet templates.
 
-  ```powershell
-  cd src
-  dotnet new webapi --name WebApi --output WebApi
-  dotnet new webapp --name WebApp --output WebApp
-  ```
+```powershell
+cd src
+dotnet new webapi --name WebApi --output WebApi
+dotnet new webapp --name WebApp --output WebApp
+```
 
-- Create a solution file in the src folder and add both projects to the solution.
+Create a solution file in the src folder and add both projects to the solution.
 
-  ```powershell
-  dotnet new sln -n explore-docker-vscode
-  dotnet sln explore-docker-vscode.sln add WebApi/WebApi.csproj
-  dotnet sln explore-docker-vscode.sln add WebApp/WebApp.csproj
-  ```
+```powershell
+dotnet new sln -n explore-docker-vscode
+dotnet sln explore-docker-vscode.sln add WebApi/WebApi.csproj
+dotnet sln explore-docker-vscode.sln add WebApp/WebApp.csproj
+```
 
 The project should look similar to this:
 
 ![](media/initial-project-setup.png)
 
-### 2 - Run both applications from VS Code
+In this case the repo was created first in GitHub, that's why it has the `.gitignore`, `LICENSE` and `README.md` files.
 
-Configure the **`applicationUrl`** properties in `Properties/launchSettings.json` for both applications so they use different ports, as shown next:
+### 3 - Run both applications from VS Code
+
+#### Configure ports for WebApp and WebApi
+
+Update the **`applicationUrl`** properties in `Properties/launchSettings.json` for both applications so they use different ports, as shown next:
 
 For the **`WebApi`** application:
 
@@ -86,15 +93,25 @@ For the **`WebApp`** application:
 }
 ```
 
+#### Install build and debug assets
+
 Open the `src/WebApi/Program.cs` file, to get prompted to install the build and debug assets:
 
 ![](media/install-build-and-debug-assets.png)
 
-Respond with `Yes` and the choose the `WebApi` project at the prompt:
+Respond with `Yes`. If you miss the prompt you can run the command:
+
+`.NET: Generate Assets for Build and Debug`:
+
+![](media/install-build-and-debug-assets-manually.png)
+
+Then choose the `WebApi` project at the prompt, to create the initial `tasks.json` and `launch.json` files:
 
 ![](media/vscode-build-and-debug-assets-project-prompt.png)
 
-Configure the `tasks.json` file in the `.vscode` folder so they work on the solution folder and use the `.sln` file, that is, change the lines that show:
+#### Update `tasks.json`
+
+Configure the `tasks.json` file in the `.vscode` folder so they work on the solution folder, that is, change the lines that show:
 
 ```json
 "${workspaceFolder}/src/WebApi/WebApi.csproj",
@@ -106,70 +123,79 @@ To point to the solution folder:
 "${workspaceFolder}/src",
 ```
 
+The above change will make the commands work on the solution, instead of just one project.
+
+#### Update `launch.json`
+
 We'll now update the `launch.json` file to start both projects at the same time.
 
-- Add the `uriFormat` configuration to the `serverReady` section of the API project, to set the startup page for the `WebApi`:
+Add the `uriFormat` configuration to the `serverReady` section of the API project, to set the startup page for the `WebApi`:
 
-  ```json
-  "serverReadyAction": {
-      "action": "openExternally",
-      "uriFormat": "%s/WeatherForecast",
-      "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
-  },
-  ```
+```json
+"serverReadyAction": {
+    "action": "openExternally",
+    "uriFormat": "%s/WeatherForecast",
+    "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+},
+```
 
-- Copy the `.NET Core Launch (API)` configuration as `.NET Core Launch (Web)`, update the folder and .dll files to the `WebApp` project, and delete the `uriFormat` parameter, so you get to something like this:
+Copy the `.NET Core Launch (API)` configuration as `.NET Core Launch (Web)`, update the folder and .dll files to the `WebApp` project, and delete the `uriFormat` parameter, so you get to something like this:
 
-  ```json
-  {
-      "name": ".NET Core Launch (Web)",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "build",
-      // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/src/WebApp/bin/Debug/netcoreapp3.1/WebApp.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/src/WebApp",
-      "stopAtEntry": false,
-      // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
-      "serverReadyAction": {
-          "action": "openExternally",
-          "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
-      },
-      "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "sourceFileMap": {
-          "/Views": "${workspaceFolder}/Views"
-      }
-  },
-  ```
+```json
+{
+    "name": ".NET Core Launch (Web)",
+    "type": "coreclr",
+    "request": "launch",
+    "preLaunchTask": "build",
+    // If you have changed target frameworks, make sure to update the program path.
+    "program": "${workspaceFolder}/src/WebApp/bin/Debug/netcoreapp3.1/WebApp.dll",
+    "args": [],
+    "cwd": "${workspaceFolder}/src/WebApp",
+    "stopAtEntry": false,
+    // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
+    "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+    },
+    "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+    },
+    "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+    }
+},
+```
 
-- Add a compound configuration to start both `WebApi` and `WebApp` together:
+Add a compound configuration to start both `WebApi` and `WebApp` together:
 
-  ```json
-  "compounds": [
-      {
-          "name": "ASP.NET Core API+Web",
-          "configurations": [
-              ".NET Core Launch (API)",
-              ".NET Core Launch (Web)"
-          ]
-      }
-  ]
-  ```
+```json
+"compounds": [
+    {
+        "name": "ASP.NET Core API+Web",
+        "configurations": [
+            ".NET Core Launch (API)",
+            ".NET Core Launch (Web)"
+        ]
+    }
+]
+```
 
-You should be able to run both applications by selecting the debugging side panel and choosing the just created "**ASP.NET Core API+Web**" configuration:
+At this point you should be able to run both applications by selecting the debugging side panel and choosing the just created "**ASP.NET Core API+Web**" configuration:
 
 ![](media/vscode-run-both-server-and-client-applications.png)
 
-Both applications should be running with the corresponding browser windows open, and both applications visible in the debugging panel:
+Both applications should be running with the corresponding browser windows open:
+
+- **WebApp**: <https://localhost:50433/>
+- **WebApi**: <https://localhost:51443/WeatherForecast>
+
+Also, both applications should be visible in the debugging panel:
 
 ![](media/vscode-server-and-client-appications-debugging-panel.png)
 
 **IMPORTANT**: keep in mind that now you have **two applications** to stop.
 
-### 3 - Configure WebApp to consume the WebApi endpoint
+### 4 - Configure WebApp to consume the WebApi endpoint
 
 We won't go into the change details because they are pretty standard and very basic, and you can see them in the repo.
 
@@ -188,15 +214,15 @@ Anyway these are changed files, with links to the source code:
 
 You should now be able to run both applications and get views like these:
 
-- **Web App Home page**
+- **Web App Home page** - <https://localhost:50433/>
 
   ![Home page with link to Forecast page](media/webapp-home-page.png)
 
-- **Web App Weather Forecast**
+- **Web App Weather Forecast** - <https://localhost:50433/WeatherForecast>
 
   ![Forecast table](media/webapp-weather-forecast.png)
 
-- **Web API Weather Forecast**
+- **Web API Weather Forecast** - <https://localhost:51443/WeatherForecast>
 
   ![Forecast json](media/webapi-weather-forecast.png)
 
@@ -214,3 +240,6 @@ You should now be able to run both applications and get views like these:
 
 - **Configuring launch.json for C# debugging** \
   <https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#starting-a-web-browser>
+
+- **Customize the Docker extension - Docker** \
+  <https://code.visualstudio.com/docs/containers/reference#_build-task-reference>
