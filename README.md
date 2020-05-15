@@ -4,6 +4,18 @@ This is a repo to explore Docker-related development with VS Code.
 
 It contains **VERY** simple Web App + REST API applications, to explore development and containerization using VS Code, VS Code extensions and CLI tools.
 
+- [Overview](#overview)
+- [Details](#details)
+  - [1 - Set up the environment](#1---set-up-the-environment)
+  - [2 - Create the base applications](#2---create-the-base-applications)
+  - [3 - Run both applications from VS Code](#3---run-both-applications-from-vs-code)
+    - [Configure ports for WebApp and WebApi](#configure-ports-for-webapp-and-webapi)
+    - [Install build and debug assets](#install-build-and-debug-assets)
+    - [Update `tasks.json`](#update-tasksjson)
+    - [Update `launch.json`](#update-launchjson)
+  - [4 - Update the WebApp to consume the WebApi endpoint](#4---update-the-webapp-to-consume-the-webapi-endpoint)
+- [Additional resources](#additional-resources)
+
 ## Overview
 
 We're going to:
@@ -166,7 +178,7 @@ Copy the `.NET Core Launch (API)` configuration as `.NET Core Launch (Web)`, upd
 },
 ```
 
-Add a compound configuration to start both `WebApi` and `WebApp` together:
+Add a `compounds` object to start both `WebApi` and `WebApp` together, right after the `configurations` object. Actually, the VS Code extension should suggest the "compounds" object once you begin to write it:
 
 ```json
 "compounds": [
@@ -195,7 +207,7 @@ Also, both applications should be visible in the debugging panel:
 
 **IMPORTANT**: keep in mind that now you have **two applications** to stop.
 
-### 4 - Configure WebApp to consume the WebApi endpoint
+### 4 - Update the WebApp to consume the WebApi endpoint
 
 We won't go into the change details because they are pretty standard and very basic, and you can see them in the repo.
 
