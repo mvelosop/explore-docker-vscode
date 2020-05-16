@@ -393,6 +393,7 @@ Click **Yes** to download the debugger to the `~\.vsdbg` folder. When the downlo
 
 ![](media/debugging-docker-ontainer-vscode.png)
 
+Hope this helps 😊
 
 ## Additional resources
 
