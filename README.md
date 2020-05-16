@@ -1,8 +1,6 @@
 # explore-docker-vscode
 
-This is a repo to explore Docker-related development with VS Code.
-
-It contains **VERY** simple Web App + REST API applications, to explore development and containerization using VS Code, VS Code extensions and CLI tools.
+In this repo we explore Docker-related development with VS Code.
 
 - [Overview](#overview)
 - [Details](#details)
@@ -15,9 +13,12 @@ It contains **VERY** simple Web App + REST API applications, to explore developm
     - [Update `launch.json`](#update-launchjson)
   - [4 - Update the WebApp to consume the WebApi endpoint](#4---update-the-webapp-to-consume-the-webapi-endpoint)
   - [5 - Containerize the applications with docker-compose](#5---containerize-the-applications-with-docker-compose)
+  - [6 - Debugging the multi-container application with docker-compose](#6---debugging-the-multi-container-application-with-docker-compose)
 - [Additional resources](#additional-resources)
 
 ## Overview
+
+In this repo we create a trivial application consisting of a Web Api back-end and a Web App front-end, to focus on the docker-related tasks when using VS Code.
 
 We're going to:
 
@@ -26,6 +27,7 @@ We're going to:
 3. Have both apps running at the same time from VS Code.
 4. Update the WebApp to consume the WebApi endpoint.
 5. Containerize the applications with docker-compose.
+6. Debugging the containerized application.
 
 ## Details
 
@@ -280,6 +282,118 @@ Now let's repeat the process for the **WebApp** project and answer **NO** when t
 
 The process also generates the **docker-compose1.yml** and **docker-compose.debug1.yml** files for the **WepApp** project, that you'll have to merge manually into the **docker-compose.yml** and **docker-compose.debug.yml** files generated previously.
 
+You also have to add a few configuration parameters to:
+
+- Expose WebApi on port 51080
+- Expose WebApp on port 50080
+- Configure WebApp with the WebApi's internal base address to access the endpoint.
+
+So the docker-compose.yml file finally gets to this:
+
+```yml
+version: '3.4'
+
+services:
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: src/WebApi/Dockerfile
+    ports:
+      - 51080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+
+  webapp:
+    image: webapp
+    build:
+      context: .
+      dockerfile: src/WebApp/Dockerfile
+    ports:
+      - 50080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - WebApiBaseAddress=http://webapi
+```
+
+### 6 - Debugging the multi-container application with docker-compose
+
+To debug the application running in the containers, we have to:
+
+- Configure the `docker-compose.debug.yml` file the same parameters we just added to `docker-compose.yml`.
+- Add a launch configuration to attach the debugger to a container.
+- Run docker-compose with the `docker-compose.debug.yml` file.
+- Install the .NET Core debugger in the development machine (this occurs the first time you debug).
+
+So let's go with the details.
+
+The `docker-compose.debug.yml` file has to be as shown next, notice the volume mounted from the file system, so the containers can use the debugger from the development machine.
+
+```yml
+version: '3.4'
+
+services:
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: src/WebApi/Dockerfile
+    ports:
+      - 51080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+
+  webapp:
+    image: webapp
+    build:
+      context: .
+      dockerfile: src/WebApp/Dockerfile
+    ports:
+      - 50080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - WebApiBaseAddress=http://webapi
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+```
+
+To add the launch configuration, go to the **Debug** tab and select the "**Add Configuration...**" option on the **Configuration** dropdown, and select the "**Docker: .NET Core Attach (Preview)**" template. This should add a configuration like the following:
+
+```json
+{
+    "name": "Docker .NET Core Attach (Preview)",
+    "type": "docker",
+    "request": "attach",
+    "platform": "netCore",
+    "sourceFileMap": {
+        "/src": "${workspaceFolder}"
+    }
+},
+```
+
+Now you have to run docker compose with the `.debug` file, and you can do that by right-clicking on the `docker-compose.debug.yml` file from the VS Code explorer view or from the command line:
+
+```powershell
+docker-compose -f .\docker-compose.debug.yml up -d
+```
+
+When all containers are up and running (it might take a little while), start the debugger with the newly added configuration (**Docker .NET Core Attach (Preview)**) and select the running container that you want to debug.
+
+The first time you start the debugger you'll receive a message prompting you to install the debugger, like this:
+
+![](media/install-debugger-in-container.png)
+
+Click **Yes** to download the debugger to the `~\.vsdbg` folder. When the download finishes you can start debugging as usual, setting breakpoints and inspecting variables in the source code, as shown in the next image.
+
+![](media/debugging-docker-ontainer-vscode.png)
+
+
 ## Additional resources
 
 - **Integrate with External Tools via Tasks** \
@@ -293,3 +407,6 @@ The process also generates the **docker-compose1.yml** and **docker-compose.debu
 
 - **Customize the Docker extension - Docker** \
   <https://code.visualstudio.com/docs/containers/reference#_build-task-reference>
+
+- **Use Docker Compose - Visual Studio Code** \
+  <https://code.visualstudio.com/docs/containers/docker-compose>
