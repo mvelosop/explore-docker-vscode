@@ -389,7 +389,9 @@ The first time you start the debugger you'll receive a message prompting you to 
 
 ![](media/install-debugger-in-container.png)
 
-Click **Yes** to download the debugger to the `~\.vsdbg` folder. When the download finishes you can start debugging as usual, setting breakpoints and inspecting variables in the source code, as shown in the next image.
+Click **Yes** to download the debugger to the `~\.vsdbg` folder.
+
+When the download finishes (it can take a little while) you can start debugging as usual, setting breakpoints and inspecting variables in the source code, as shown in the next image.
 
 ![](media/debugging-docker-ontainer-vscode.png)
 
